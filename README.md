@@ -35,6 +35,14 @@ The core language idioms. This covers fundamental Go philosophy, proper interfac
 
 The definitive guide to building modern command-line applications. This covers the "Command-First" architecture, 12-factor configuration, and how to structure your application using Cobra and Viper exactly as they were intended to be used.
 
+### 3. [Spec Review](./go-spec-reviewer/SKILL.md)
+
+Review a design document *before* implementation begins. Channels Rob Pike, the stdlib authors, and spf13 to catch over-engineering, missing error paths, interface misuse, and Cobra/Viper convention violations while a plan is still cheap to change.
+
+### 4. [Release Engineering](./go-release/SKILL.md)
+
+How to cut a release without breaking your users. Semantic versioning promises, mechanically detecting breaking changes, `Deprecated:` conventions, go.mod hygiene, and shipping binaries with GoReleaser.
+
 ## Installation
 
 Place the skills where your AI coding agent can find them:
@@ -43,12 +51,16 @@ Place the skills where your AI coding agent can find them:
 # Windows — directory junction (run as Administrator)
 New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\skills\go" -Target "$PWD\go"
 New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\skills\cobra-viper" -Target "$PWD\cobra-viper"
+New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\skills\go-spec-reviewer" -Target "$PWD\go-spec-reviewer"
+New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\skills\go-release" -Target "$PWD\go-release"
 ```
 
 ```bash
 # macOS / Linux — symlink
-ln -s "$PWD/go"          "$HOME/.agents/skills/go"
-ln -s "$PWD/cobra-viper" "$HOME/.agents/skills/cobra-viper"
+ln -s "$PWD/go"                 "$HOME/.agents/skills/go"
+ln -s "$PWD/cobra-viper"        "$HOME/.agents/skills/cobra-viper"
+ln -s "$PWD/go-spec-reviewer"   "$HOME/.agents/skills/go-spec-reviewer"
+ln -s "$PWD/go-release"         "$HOME/.agents/skills/go-release"
 ```
 
 After linking, restart VS Code. The skills will appear in the Copilot customizations index and be invoked automatically when relevant Go or CLI work is detected.
