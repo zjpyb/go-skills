@@ -3,7 +3,9 @@ name: go
 description: >
   Expert Go programming skill authored by spf13 (former Go team lead, author of Cobra, Viper, Hugo, Afero).
   Covers idiomatic Go — package design, error handling, interfaces, concurrency, testing, and
-  project layout. Use when writing, reviewing, or refactoring any Go code.
+  project layout, current through Go 1.25. Use whenever Go code is written, reviewed, debugged, or
+  refactored — any .go file, go.mod, CLI tool, or web service, and whenever the user mentions
+  Go or golang, even if they don't ask for "idiomatic" code.
 ---
 
 # Idiomatic Go: The Go Way
@@ -26,8 +28,8 @@ Idiomatic Go patterns and best practices for building robust, efficient, and mai
 Go favors readability and simplicity over abstraction and cleverness. Code should be obvious. If you have to read a function three times to understand its control flow, it needs to be rewritten.
 
 ```go
-// Idiomatic: Direct, linear control flow
-func GetUser(id string) (*User, error) {
+// Idiomatic: Direct, linear control flow. Note: no "Get" prefix — Go omits it.
+func LookupUser(id string) (*User, error) {
     user, err := db.FindUser(id)
     if err != nil {
         return nil, fmt.Errorf("finding user %s: %w", id, err)
@@ -128,12 +130,12 @@ Write concrete types first. Only define an interface when you discover that mult
 Interfaces belong in the package that *consumes* them, not the package that *implements* them. This decouples your packages.
 
 ```go
-// internal/processor/processor.go
+// processor/processor.go
 
 // Idiomatic: The consumer defines exactly what it needs.
 // The concrete 'UserStore' doesn't even need to know this interface exists.
 type UserFetcher interface {
-    GetUser(id string) (*User, error)
+    FetchUser(id string) (*User, error)
 }
 
 type Processor struct {
@@ -182,34 +184,41 @@ p, err := idx.FindOne("Steve")     // *people.Person
 
 ## Concurrency Patterns
 
-**Anti-Pattern:** Heavy, static Worker Pools.Go's scheduler is incredibly efficient; you don't need to manually manage pools of workers like OS threads in other languages.
+**Anti-Pattern:** Heavy, static Worker Pools. Go's scheduler is incredibly efficient; you don't need to manually manage pools of workers like OS threads in other languages.
 
 ### 1. Share Memory by Communicating
 
 Don't use mutexes to protect shared data if you can pass that data over a channel instead. Channels orchestrate execution; mutexes serialize execution.
 
-### 2. Bounded Concurrency (The Semaphore Pattern)
+### 2. Bounded Concurrency
 
-If you need to limit concurrency, use a buffered channel as a semaphore rather than a rigid worker pool.
+To limit concurrency, use `errgroup` with `SetLimit`. Don't hand-roll a semaphore channel or a rigid worker pool when this exists.
 
 ```go
-func FetchAll(urls []string, maxConcurrent int) error {
-    sem := make(chan struct{}, maxConcurrent)
-    g, ctx := errgroup.WithContext(context.Background())
+func FetchAll(ctx context.Context, urls []string, maxConcurrent int) error {
+    g, ctx := errgroup.WithContext(ctx)
+    g.SetLimit(maxConcurrent)
 
     for _, url := range urls {
-        url := url // Note: Go 1.22+ handles this natively
-
-        sem <- struct{}{} // Block if we hit max concurrency
-
         g.Go(func() error {
-            defer func() { <-sem }() // Release token
             return fetch(ctx, url)
         })
     }
 
     return g.Wait()
 }
+```
+
+Loop variables are per-iteration since Go 1.22 — never emit the old `url := url` capture line.
+
+When you don't need error propagation, `sync.WaitGroup.Go` (Go 1.25) removes the Add/Done boilerplate:
+
+```go
+var wg sync.WaitGroup
+for _, url := range urls {
+    wg.Go(func() { process(url) })
+}
+wg.Wait()
 ```
 
 ### 3. Never Start a Goroutine Without Knowing How It Stops
@@ -328,6 +337,46 @@ In tests, inject `afero.NewMemMapFs()` to completely eliminate disk I/O and prev
 
 For comparing complex structs or maps, use `github.com/google/go-cmp/cmp` for rich, readable diffs instead of the strict `reflect.DeepEqual`.
 
+### 7. Modern `testing` Additions (Go 1.24+)
+
+```go
+// Test-scoped context — canceled automatically when the test ends.
+// Use instead of context.Background() in tests.
+func TestFetch(t *testing.T) {
+    ctx := t.Context()
+    ...
+}
+
+// Benchmarks: b.Loop() replaces the classic b.N loop — more accurate,
+// prevents the compiler from optimizing the benchmarked call away.
+func BenchmarkParse(b *testing.B) {
+    for b.Loop() {
+        Parse(input)
+    }
+}
+
+// t.Chdir(dir) changes working directory for the test and restores it after.
+```
+
+### 8. `testing/synctest` for Concurrent Code (Go 1.25)
+
+Test goroutines and timeouts deterministically with a fake clock — no `time.Sleep` in tests, no flaky timing assumptions:
+
+```go
+func TestTimeout(t *testing.T) {
+    synctest.Test(t, func(t *testing.T) {
+        ctx, cancel := context.WithTimeout(t.Context(), time.Second)
+        defer cancel()
+        time.Sleep(2 * time.Second) // instant — fake clock advances when all goroutines block
+        if ctx.Err() == nil {
+            t.Fatal("expected timeout")
+        }
+    })
+}
+```
+
+Never write `time.Sleep(100 * time.Millisecond)` to "wait for a goroutine" in a test. Use synctest, channels, or explicit synchronization.
+
 ## Generics (Go 1.18+)
 
 Generics exist to eliminate duplicated algorithms, not to create type hierarchies. If you are thinking about generics in terms of inheritance or polymorphism, stop — you are writing Java.
@@ -376,6 +425,7 @@ type UserStore interface {
 - **Do** use `comparable` when you need map keys or equality checks.
 - **Do** use `cmp.Ordered` when you need `<`, `>`, `<=`, `>=`.
 - Start with a concrete implementation. Generify only when you have the same logic repeated across 3+ types.
+- Generic type aliases are fully supported since Go 1.24.
 
 ## Standard Library: Use the New Packages
 
@@ -402,21 +452,29 @@ slices.Compact(s)                  // removes consecutive duplicates
 slices.Delete(s, i, j)            // removes elements [i, j)
 slices.Clone(s)                   // shallow copy
 slices.Concat(s1, s2, s3)         // concatenate multiple slices (1.22)
+
+// Iterator bridging (1.23)
+slices.Collect(it)                // iterator -> slice
+slices.Sorted(it)                 // iterator -> sorted slice
+slices.Values(s)                  // slice -> iterator
 ```
 
 Never write `sort.Slice(s, func(i, j int) bool { return s[i] < s[j] })` when `slices.Sort(s)` exists.
 
-### `maps` package (Go 1.21)
+### `maps` package (Go 1.21; iterators 1.23)
 
 ```go
 import "maps"
 
-maps.Keys(m)        // returns an iterator over keys (1.23) / []K (earlier)
-maps.Values(m)      // returns an iterator over values
+maps.Keys(m)        // iterator over keys — collect with slices.Collect / slices.Sorted
+maps.Values(m)      // iterator over values
 maps.Clone(m)       // shallow copy
 maps.Copy(dst, src) // copies all entries from src into dst
-maps.Delete(m, func(k, v T) bool { ... })  // delete entries matching predicate
+maps.DeleteFunc(m, func(k K, v V) bool { ... })  // delete entries matching predicate
 maps.Equal(m1, m2)  // reports whether two maps are equal
+
+// Common idiom: sorted keys in one line
+keys := slices.Sorted(maps.Keys(m))
 ```
 
 ### `cmp` package (Go 1.21)
@@ -448,6 +506,49 @@ if errors.Is(err, ErrNotFound) { ... }
 ```
 
 Use this instead of `fmt.Errorf("%w; %w", err1, err2)` or any `multierr` package.
+
+### Iterators: `iter` and Range-over-Func (Go 1.23)
+
+The standard way to expose a sequence from an API without allocating a slice. Return `iter.Seq[T]` or `iter.Seq2[K, V]`; callers use plain `range`:
+
+```go
+func (idx *Index) All() iter.Seq[*Person] {
+    return func(yield func(*Person) bool) {
+        for _, p := range idx.people {
+            if !yield(p) {
+                return
+            }
+        }
+    }
+}
+
+// Caller — just a normal range loop
+for p := range idx.All() { ... }
+```
+
+Prefer returning iterators over slices for large or lazily-produced sequences. Don't invent a custom `Next()/HasNext()` iterator type — that's Java.
+
+### `math/rand/v2` (Go 1.22)
+
+Always import `math/rand/v2`, never the old `math/rand`. Auto-seeded, cleaner API:
+
+```go
+import "math/rand/v2"
+
+rand.IntN(100)            // was rand.Intn — note the capital N
+rand.N(10 * time.Second)  // generic: random value in [0, n) for any integer type
+```
+
+### `encoding/json`: `omitzero` (Go 1.24)
+
+`omitzero` omits any zero value — including `time.Time{}` and zero structs, which `omitempty` never handled correctly:
+
+```go
+type Event struct {
+    Name      string    `json:"name"`
+    StartedAt time.Time `json:"started_at,omitzero"` // omitempty would emit "0001-01-01T..."
+}
+```
 
 ## Concurrency: Modern Patterns
 
@@ -540,6 +641,15 @@ func Print(v interface{}) { ... }
 
 // Current — `any` is a built-in alias for interface{} since Go 1.18
 func Print(v any) { ... }
+```
+
+### Tool Dependencies in `go.mod` (Go 1.24)
+
+Never generate a `tools.go` file with blank imports. Track dev tools with the `tool` directive:
+
+```bash
+go get -tool golang.org/x/tools/cmd/stringer
+go tool stringer -type=Color   # run it
 ```
 
 ## Structured Logging with `log/slog` (Go 1.21)
