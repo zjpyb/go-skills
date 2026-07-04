@@ -43,6 +43,10 @@ Review a design document *before* implementation begins. Channels Rob Pike, the 
 
 How to cut a release without breaking your users. Semantic versioning promises, mechanically detecting breaking changes, `Deprecated:` conventions, go.mod hygiene, and shipping binaries with GoReleaser.
 
+### 5. [Desktop Apps: Wails](./wails/SKILL.md)
+
+Building native desktop applications in Go with Wails. Covers both v2 (stable) and v3 (alpha) — and, critically, how to tell them apart, since their APIs are incompatible and easily blended by mistake.
+
 ## Installation
 
 Place the skills where your AI coding agent can find them:
@@ -53,6 +57,7 @@ New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\skills\go" -Target "
 New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\skills\cobra-viper" -Target "$PWD\cobra-viper"
 New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\skills\go-spec-reviewer" -Target "$PWD\go-spec-reviewer"
 New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\skills\go-release" -Target "$PWD\go-release"
+New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\skills\wails" -Target "$PWD\wails"
 ```
 
 ```bash
@@ -61,6 +66,7 @@ ln -s "$PWD/go"                 "$HOME/.agents/skills/go"
 ln -s "$PWD/cobra-viper"        "$HOME/.agents/skills/cobra-viper"
 ln -s "$PWD/go-spec-reviewer"   "$HOME/.agents/skills/go-spec-reviewer"
 ln -s "$PWD/go-release"         "$HOME/.agents/skills/go-release"
+ln -s "$PWD/wails"              "$HOME/.agents/skills/wails"
 ```
 
 After linking, restart VS Code. The skills will appear in the Copilot customizations index and be invoked automatically when relevant Go or CLI work is detected.
