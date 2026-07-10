@@ -47,7 +47,25 @@ How to cut a release without breaking your users. Semantic versioning promises, 
 
 Building native desktop applications in Go with Wails. Covers both v2 (stable) and v3 (alpha) — and, critically, how to tell them apart, since their APIs are incompatible and easily blended by mistake.
 
+### 6. [File Operations: fileflow & pathologize](./fileflow-pathologize/SKILL.md)
+
+Safe cross-filesystem file operations using `spf13/fileflow` (move, copy, rename with conflict-safe naming) and `spf13/pathologize` (sanitize filenames and path segments for every OS). Use whenever Go code moves, copies, renames, downloads, or extracts files, or builds paths from untrusted input.
+
 ## Installation
+
+### Claude Code
+
+```
+/plugin marketplace add spf13/go-skills
+/plugin install go@go-skills
+/plugin install cobra-viper@go-skills
+/plugin install go-spec-reviewer@go-skills
+/plugin install go-release@go-skills
+/plugin install wails@go-skills
+/plugin install fileflow-pathologize@go-skills
+```
+
+### Other AI Agents (Copilot, Cursor, etc.)
 
 Place the skills where your AI coding agent can find them:
 
@@ -58,15 +76,17 @@ New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\skills\cobra-viper" 
 New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\skills\go-spec-reviewer" -Target "$PWD\go-spec-reviewer"
 New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\skills\go-release" -Target "$PWD\go-release"
 New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\skills\wails" -Target "$PWD\wails"
+New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\skills\fileflow-pathologize" -Target "$PWD\fileflow-pathologize"
 ```
 
 ```bash
 # macOS / Linux — symlink
-ln -s "$PWD/go"                 "$HOME/.agents/skills/go"
-ln -s "$PWD/cobra-viper"        "$HOME/.agents/skills/cobra-viper"
-ln -s "$PWD/go-spec-reviewer"   "$HOME/.agents/skills/go-spec-reviewer"
-ln -s "$PWD/go-release"         "$HOME/.agents/skills/go-release"
-ln -s "$PWD/wails"              "$HOME/.agents/skills/wails"
+ln -s "$PWD/go"                        "$HOME/.agents/skills/go"
+ln -s "$PWD/cobra-viper"               "$HOME/.agents/skills/cobra-viper"
+ln -s "$PWD/go-spec-reviewer"          "$HOME/.agents/skills/go-spec-reviewer"
+ln -s "$PWD/go-release"                "$HOME/.agents/skills/go-release"
+ln -s "$PWD/wails"                     "$HOME/.agents/skills/wails"
+ln -s "$PWD/fileflow-pathologize"      "$HOME/.agents/skills/fileflow-pathologize"
 ```
 
 After linking, restart VS Code. The skills will appear in the Copilot customizations index and be invoked automatically when relevant Go or CLI work is detected.
