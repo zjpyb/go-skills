@@ -42,7 +42,8 @@ The single most important pattern. Use `pathologize.Join` to combine a
 **trusted root** with **untrusted path parts** (regex captures, user input,
 scraped titles), then move with `fileflow`. `Join` sanitizes each part and
 guarantees it stays lexically under the root — a part can't inject an absolute
-path or `../` its way out.
+path or `../` its way out. This is lexical containment only: existing symlinks
+below the root can still redirect filesystem operations outside it.
 
 ```go
 import (
@@ -269,10 +270,10 @@ untrusted input, use `Join`, or `Clean` each segment yourself.
 Untrusted input must never decide where a file lands. Two safe options:
 
 1. **`Join`** (preferred) — pass the trusted root and untrusted parts; parts are
-   sanitized and contained under the root:
+   sanitized and lexically contained under the root:
 
    ```go
-   dst := pathologize.Join(root, untrusted)   // can't escape root
+   dst := pathologize.Join(root, untrusted)   // no absolute-path or .. escape
    ```
 
 2. **`Clean` per segment** — when you assemble the path yourself, `Clean` each
@@ -282,6 +283,11 @@ Untrusted input must never decide where a file lands. Two safe options:
 
 Do **not** rely on `CleanPath` for this — it preserves `..` and absolute paths
 by design.
+
+`Join` does not protect against symlink traversal in an attacker-controlled
+destination tree. For that threat model, use `os.Root` or platform openat-style
+operations where possible, and reject symlink components before passing paths
+to string-based file APIs.
 
 ## Common Mistakes
 

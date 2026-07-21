@@ -1,6 +1,6 @@
 {
   "name": "go-skills",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Authoritative Go skills written by spf13, covering idiomatic Go, CLI architecture, spec review, release engineering, desktop apps, and file operations.",
   "author": {
     "name": "Steve Francia",
@@ -18,14 +18,7 @@
     "wails",
     "release-engineering"
   ],
-  "skills": [
-    "./go",
-    "./cobra-viper",
-    "./go-spec-reviewer",
-    "./go-release",
-    "./wails",
-    "./fileflow-pathologize"
-  ],
+  "skills": "./skills/",
   "interface": {
     "displayName": "Go Skills",
     "shortDescription": "Idiomatic Go guidance from spf13",

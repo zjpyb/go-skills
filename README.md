@@ -27,27 +27,27 @@ It strips away the noise and focuses on the actual architectures used by the Go 
 
 ## The Playbooks
 
-### 1. [General Go Patterns](./go/SKILL.md)
+### 1. [General Go Patterns](./skills/go/SKILL.md)
 
 The core language idioms. This covers fundamental Go philosophy, proper interface design, standard-library-compliant testing, and concurrency patterns. **Stop writing Java in Go.** Read this first.
 
-### 2. [CLI Architecture: Cobra & Viper](./cobra-viper/SKILL.md)
+### 2. [CLI Architecture: Cobra & Viper](./skills/cobra-viper/SKILL.md)
 
 The definitive guide to building modern command-line applications. This covers the "Command-First" architecture, 12-factor configuration, and how to structure your application using Cobra and Viper exactly as they were intended to be used.
 
-### 3. [Spec Review](./go-spec-reviewer/SKILL.md)
+### 3. [Spec Review](./skills/go-spec-reviewer/SKILL.md)
 
 Review a design document *before* implementation begins. Channels Rob Pike, the stdlib authors, and spf13 to catch over-engineering, missing error paths, interface misuse, and Cobra/Viper convention violations while a plan is still cheap to change.
 
-### 4. [Release Engineering](./go-release/SKILL.md)
+### 4. [Release Engineering](./skills/go-release/SKILL.md)
 
 How to cut a release without breaking your users. Semantic versioning promises, mechanically detecting breaking changes, `Deprecated:` conventions, go.mod hygiene, and shipping binaries with GoReleaser.
 
-### 5. [Desktop Apps: Wails](./wails/SKILL.md)
+### 5. [Desktop Apps: Wails](./skills/wails/SKILL.md)
 
 Building native desktop applications in Go with Wails. Covers both v2 (stable) and v3 (alpha) — and, critically, how to tell them apart, since their APIs are incompatible and easily blended by mistake.
 
-### 6. [File Operations: fileflow & pathologize](./fileflow-pathologize/SKILL.md)
+### 6. [File Operations: fileflow & pathologize](./skills/fileflow-pathologize/SKILL.md)
 
 Safe cross-filesystem file operations using `spf13/fileflow` (move, copy, rename with conflict-safe naming) and `spf13/pathologize` (sanitize filenames and path segments for every OS). Use whenever Go code moves, copies, renames, downloads, or extracts files, or builds paths from untrusted input.
 
@@ -67,10 +67,14 @@ Safe cross-filesystem file operations using `spf13/fileflow` (move, copy, rename
 
 ### Codex
 
+Install from the repository that contains the Codex plugin manifest. For this fork:
+
 ```bash
-codex plugin marketplace add spf13/go-skills
+codex plugin marketplace add zjpyb/go-skills
 codex plugin add go-skills@go-skills
 ```
+
+After Codex support is merged upstream, use `spf13/go-skills` as the marketplace source instead.
 
 Start a new Codex thread after installation. The bundle provides `$go-skills:go`, `$go-skills:cobra-viper`, `$go-skills:go-spec-reviewer`, `$go-skills:go-release`, `$go-skills:wails`, and `$go-skills:fileflow-pathologize`.
 
@@ -82,22 +86,22 @@ Place the skills where your AI coding agent can find them:
 
 ```powershell
 # Windows — directory junction (run as Administrator)
-New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\skills\go" -Target "$PWD\go"
-New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\skills\cobra-viper" -Target "$PWD\cobra-viper"
-New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\skills\go-spec-reviewer" -Target "$PWD\go-spec-reviewer"
-New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\skills\go-release" -Target "$PWD\go-release"
-New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\skills\wails" -Target "$PWD\wails"
-New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\skills\fileflow-pathologize" -Target "$PWD\fileflow-pathologize"
+New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\skills\go" -Target "$PWD\skills\go"
+New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\skills\cobra-viper" -Target "$PWD\skills\cobra-viper"
+New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\skills\go-spec-reviewer" -Target "$PWD\skills\go-spec-reviewer"
+New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\skills\go-release" -Target "$PWD\skills\go-release"
+New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\skills\wails" -Target "$PWD\skills\wails"
+New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\skills\fileflow-pathologize" -Target "$PWD\skills\fileflow-pathologize"
 ```
 
 ```bash
 # macOS / Linux — symlink
-ln -s "$PWD/go"                        "$HOME/.agents/skills/go"
-ln -s "$PWD/cobra-viper"               "$HOME/.agents/skills/cobra-viper"
-ln -s "$PWD/go-spec-reviewer"          "$HOME/.agents/skills/go-spec-reviewer"
-ln -s "$PWD/go-release"                "$HOME/.agents/skills/go-release"
-ln -s "$PWD/wails"                     "$HOME/.agents/skills/wails"
-ln -s "$PWD/fileflow-pathologize"      "$HOME/.agents/skills/fileflow-pathologize"
+ln -s "$PWD/skills/go"                        "$HOME/.agents/skills/go"
+ln -s "$PWD/skills/cobra-viper"               "$HOME/.agents/skills/cobra-viper"
+ln -s "$PWD/skills/go-spec-reviewer"          "$HOME/.agents/skills/go-spec-reviewer"
+ln -s "$PWD/skills/go-release"                "$HOME/.agents/skills/go-release"
+ln -s "$PWD/skills/wails"                     "$HOME/.agents/skills/wails"
+ln -s "$PWD/skills/fileflow-pathologize"      "$HOME/.agents/skills/fileflow-pathologize"
 ```
 
 After linking, restart VS Code. The skills will appear in the Copilot customizations index and be invoked automatically when relevant Go or CLI work is detected.

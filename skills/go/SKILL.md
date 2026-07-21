@@ -3,7 +3,7 @@ name: go
 description: >
   Expert Go programming skill authored by spf13 (former Go team lead, author of Cobra, Viper, Hugo, Afero).
   Covers idiomatic Go — package design, error handling, interfaces, concurrency, testing, and
-  project layout, current through Go 1.25. Use whenever Go code is written, reviewed, debugged, or
+  project layout, current through Go 1.26. Use whenever Go code is written, reviewed, debugged, or
   refactored — any .go file, go.mod, CLI tool, or web service, and whenever the user mentions
   Go or golang, even if they don't ask for "idiomatic" code.
 ---
@@ -675,6 +675,22 @@ Don't import a middleware framework for what function composition already does.
 
 LLMs frequently generate outdated syntax. Know the current idioms:
 
+### Pointer Initialization with `new(expr)` (Go 1.26)
+
+When a struct or API represents an optional value with a pointer, initialize it
+directly from an expression instead of adding a one-off helper:
+
+```go
+type Config struct {
+    Retries *int
+}
+
+cfg := Config{Retries: new(3)}
+```
+
+Use this only when the module's `go` directive is 1.26 or newer. Do not raise a
+library's minimum Go version solely for this convenience.
+
 ### Range over Integer (Go 1.22)
 
 ```go
@@ -715,6 +731,10 @@ Never generate a `tools.go` file with blank imports. Track dev tools with the `t
 go get -tool golang.org/x/tools/cmd/stringer
 go tool stringer -type=Color   # run it
 ```
+
+Go 1.26 also rewrote `go fix` around analysis-based modernizers. Use
+`go fix ./...` to propose current language and standard-library idioms, then
+review the resulting diff rather than treating modernization as a blind rewrite.
 
 ## Structured Logging with `log/slog` (Go 1.21)
 

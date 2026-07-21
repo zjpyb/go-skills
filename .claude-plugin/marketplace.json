@@ -9,9 +9,9 @@
   "plugins": [
     {
       "name": "go",
-      "source": "./go",
+      "source": "./skills/go",
       "description": "Idiomatic Go patterns and best practices — package design, error handling, interfaces, concurrency, testing, and project layout.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": { "name": "Steve Francia" },
       "homepage": "https://github.com/spf13/go-skills",
       "repository": "https://github.com/spf13/go-skills",
@@ -22,9 +22,9 @@
     },
     {
       "name": "cobra-viper",
-      "source": "./cobra-viper",
+      "source": "./skills/cobra-viper",
       "description": "Definitive CLI architecture guide using Cobra and Viper — command-first design, 12-factor config, environment variable binding, and in-memory CLI testing.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": { "name": "Steve Francia" },
       "homepage": "https://github.com/spf13/go-skills",
       "repository": "https://github.com/spf13/go-skills",
@@ -35,7 +35,7 @@
     },
     {
       "name": "go-spec-reviewer",
-      "source": "./go-spec-reviewer",
+      "source": "./skills/go-spec-reviewer",
       "description": "Review Go design documents before implementation — catches over-engineering, missing error paths, interface misuse, and Cobra/Viper convention violations while a plan is still cheap to change.",
       "version": "1.0.0",
       "author": { "name": "Steve Francia" },
@@ -48,7 +48,7 @@
     },
     {
       "name": "go-release",
-      "source": "./go-release",
+      "source": "./skills/go-release",
       "description": "Release engineering for Go modules and applications — semantic versioning, breaking-change detection, deprecation, go.mod hygiene, and binary distribution with GoReleaser.",
       "version": "1.0.0",
       "author": { "name": "Steve Francia" },
@@ -61,9 +61,9 @@
     },
     {
       "name": "wails",
-      "source": "./wails",
+      "source": "./skills/wails",
       "description": "Building native desktop applications in Go with Wails v2 (stable) and v3 (alpha) — and how to tell them apart since their APIs are incompatible.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": { "name": "Steve Francia" },
       "homepage": "https://github.com/spf13/go-skills",
       "repository": "https://github.com/spf13/go-skills",
@@ -74,9 +74,9 @@
     },
     {
       "name": "fileflow-pathologize",
-      "source": "./fileflow-pathologize",
+      "source": "./skills/fileflow-pathologize",
       "description": "Safe file operations in Go using spf13/fileflow and spf13/pathologize — move, copy, rename across filesystems with conflict-safe naming and OS-safe path sanitization.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": { "name": "Steve Francia" },
       "homepage": "https://github.com/spf13/go-skills",
       "repository": "https://github.com/spf13/go-skills",

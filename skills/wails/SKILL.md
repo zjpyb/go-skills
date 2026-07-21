@@ -165,7 +165,7 @@ func (s *NoteService) Save(n Note) error { ... } // callable from JS
 
 v3 builds are orchestrated by go-task via `Taskfile.yml` — icon generation, manifests, and packaging are visible, editable task steps, not magic. Customize by editing tasks, not by fighting the CLI. Platform packaging: `wails3 package` (`.app`/dmg on macOS, NSIS on Windows, AppImage/deb on Linux).
 
-Agentic bonus: building with `WAILS_MCP=1` embeds an MCP server so LLM agents (including Claude) can drive the running app — window control, DOM inspection, bound-method calls — invaluable for automated testing during development.
+Experimental development-only feature: building with `WAILS_MCP=1` embeds an MCP server so LLM agents can drive the running app, including window control, DOM inspection, JavaScript evaluation, input simulation, and bound-method calls. It binds to `127.0.0.1:9099` by default. Never ship a production build with the `mcp` tag, and do not expose it on a non-loopback interface outside a trusted, isolated test network.
 
 ### v3 Alpha Discipline
 
